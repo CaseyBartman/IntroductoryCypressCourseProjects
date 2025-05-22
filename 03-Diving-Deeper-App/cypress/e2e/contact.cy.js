@@ -16,14 +16,12 @@ describe('page navigation', { defaultCommandTimeout: 1000 }, () => {
     //Can also use afterEach and after(), but these are less commono
 
   it('should navigate between pages', { defaultCommandTimeout: 1000 }, () => {
-    //Before Refactoring:
-    //cy.visit('/about'); //See how I start at the about page right at the start
-
-    cy.task('seedDatabase', 'fileName.csv').then(returnValue => {console.log(returnValue)});
+    //Example task call:
+    //cy.task('seedDatabase', 'fileName.csv').then(returnValue => {console.log(returnValue)});
     
-    cy.get('[data-cy="contact-input-message"]').type('Hello World!');
-    cy.get('[data-cy="contact-input-name"]').type('John Doe');
-    cy.get('[data-cy="contact-btn-submit"]').then((el) => {
+    cy.getById('contact-input-message').type('Hello World!');
+    cy.getById('contact-input-name').type('John Doe');
+    cy.getById('contact-btn-submit').then((el) => {
         //el here is a wrapper object!
         //We lose availability to the "should" assertion with this element!
         //Instead, use the globally available expect method!
@@ -31,23 +29,23 @@ describe('page navigation', { defaultCommandTimeout: 1000 }, () => {
         expect(el.text()).to.equal('Send Message'); //note, .eq() is a shorthand for .equal()
     })
     
-    cy.get('[data-cy="contact-input-email"]').type('test@example.com'); //cy.get('[data-cy="contact-input-email"]').type('test@example.com{enter}');
-    cy.submitForm();
+    cy.getById('contact-input-email').type('test@example.com'); //cy.get('[data-cy="contact-input-email"]').type('test@example.com{enter}');
+    cy.submitForm(); //Custom command here!
 
     //NOTE: Doing this below 
     const btn = cy.get('[data-cy="contact-btn-submit"]'); //This is essentially just creating another function call
     //DON'T DO THIS! Needlessly complex and the button is NOT stored in the btn constant!
 
-    cy.get('[data-cy="contact-btn-submit"]').as('submitBtn');
+    cy.getById('contact-btn-submit').as('submitBtn'); //Instead, use aliases!
     cy.get('@submitBtn') 
         .contains('Sending...')
         .should('have.attr', 'disabled'); //Button should be disabled after submitting the form
     })
 
     it('should validate the form input', () => {
-        //cy.visit('/about');
-        cy.get('[data-cy="contact-btn-submit"]').as('submitBtn');
-        cy.get('[data-cy="contact-input-message"]').as('msgInput');
+        //Remember, visit is called with beforeEach()!
+        cy.getById('contact-btn-submit').as('submitBtn');
+        cy.getById('contact-input-message').as('msgInput');
         cy.submitForm();
         cy.get('@submitBtn').then(el => {
             expect(el).to.not.have.attr('disabled');
