@@ -1,10 +1,11 @@
-/// <reference types="Cypress" />
+/// <reference types="cypress" />
 //Note: From here on, I can refactor these methods to be a bit more readable and understandable, 
 // but I'm now more focused on just learning the concepts
 describe('page navigation', () => {
   it('should navigate between pages', () => {
-    cy.visit('http://localhost:5173/'); 
-    cy.get('[data-cy="header-about-link"]').click();
+    cy.visit('/'); 
+    //cy.get('[data-cy="header-about-link"]').click(); //becomes cy.getById('header-about-link').click();
+    cy.getById('header-about-link').click();
     cy.location('pathname').should('eq', '/about'); // About Page
     //The pathname should have "//about"
 

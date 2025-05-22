@@ -1,10 +1,25 @@
-/// <reference types="Cypress" />
+/// <reference types="cypress" />
 //Note: From here on, I can refactor these methods to be a bit more readable and understandable, 
 // but I'm now more focused on just learning the concepts
-describe('page navigation', () => {
-  it('should navigate between pages', () => {
+describe('page navigation', { defaultCommandTimeout: 1000 }, () => {
+
+    before(() => {
+        // Runs only once, before all tests!
+    })
+
+    //Runs before every test!
+    beforeEach(() => {
+        cy.visit('/about'); // http://localhost:5173/about
+        //Can seed a database here, etc. 
+    });
+
+    //Can also use afterEach and after(), but these are less commono
+
+  it('should navigate between pages', { defaultCommandTimeout: 1000 }, () => {
     //Before Refactoring:
-    cy.visit('http://localhost:5173/about'); //See how I start at the about page right at the start
+    //cy.visit('/about'); //See how I start at the about page right at the start
+
+    cy.task('seedDatabase', 'fileName.csv').then(returnValue => {console.log(returnValue)});
     
     cy.get('[data-cy="contact-input-message"]').type('Hello World!');
     cy.get('[data-cy="contact-input-name"]').type('John Doe');
@@ -16,8 +31,8 @@ describe('page navigation', () => {
         expect(el.text()).to.equal('Send Message'); //note, .eq() is a shorthand for .equal()
     })
     
-    cy.get('[data-cy="contact-input-email"]').type('test@example.com{enter}');
-    //cy.get('[data-cy="contact-btn-submit"]').click();
+    cy.get('[data-cy="contact-input-email"]').type('test@example.com'); //cy.get('[data-cy="contact-input-email"]').type('test@example.com{enter}');
+    cy.submitForm();
 
     //NOTE: Doing this below 
     const btn = cy.get('[data-cy="contact-btn-submit"]'); //This is essentially just creating another function call
@@ -30,10 +45,10 @@ describe('page navigation', () => {
     })
 
     it('should validate the form input', () => {
-        cy.visit('http://localhost:5173/about');
+        //cy.visit('/about');
         cy.get('[data-cy="contact-btn-submit"]').as('submitBtn');
         cy.get('[data-cy="contact-input-message"]').as('msgInput');
-        cy.get('@submitBtn').click();
+        cy.submitForm();
         cy.get('@submitBtn').then(el => {
             expect(el).to.not.have.attr('disabled');
             expect(el.text()).to.not.equal('Sending...');
