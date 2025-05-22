@@ -31,18 +31,22 @@ describe('page navigation', () => {
 
     it('should validate the form input', () => {
         cy.visit('http://localhost:5173/about');
-        y.get('[data-cy="contact-btn-submit"]').as('submitBtn');
+        cy.get('[data-cy="contact-btn-submit"]').as('submitBtn');
+        cy.get('[data-cy="contact-input-message"]').as('msgInput');
         cy.get('@submitBtn').click();
         cy.get('@submitBtn').then(el => {
             expect(el).to.not.have.attr('disabled');
             expect(el.text()).to.not.equal('Sending...');
         })
 
-        cy.get('@submitBtn').blur();
-        cy.get('@submitBtn').parent().then(el => {
-            expect(el.attr('class')).to.contains('invalid');
+        cy.get('@msgInput').blur();
+        cy.get('@msgInput')
+        .parent()
+        .should((el) => {
+            expect(el.attr('class')).not.to.be.undefined;
+            expect(el.attr('class')).to.contain('invalid');
         })
-        cy.get('@submitBtn').blur();
+        // .should('have.attr', 'class').and('match', /invalid/); //Match provides REGEX matching!
 
         //To test further fields, you can use .focus() then .blur()
     })
