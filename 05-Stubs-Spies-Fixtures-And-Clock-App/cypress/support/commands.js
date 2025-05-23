@@ -23,3 +23,12 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.addQuery('getById', (id) => {
+    const getFn = cy.now('get', `[data-cy="${id}"]`); //Allows you to execute any instruction immediately instead of waiting for it!
+    //using a template literal to inject the id!
+    return () => { //This is the function that is being retried within the 4 second timeframe (or, default one)
+        //This inner function is the one that is continually retried!
+        return getFn();
+    }
+});
