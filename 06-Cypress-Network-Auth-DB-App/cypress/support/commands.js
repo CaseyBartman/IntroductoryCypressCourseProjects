@@ -50,3 +50,22 @@ Cypress.on('uncaught:exception', (err) => {
     return false;
   }
 });
+
+Cypress.Commands.addQuery('getById', (id) => {
+    const getFn = cy.now('get', `[data-cy="${id}"]`); //Allows you to execute any instruction immediately instead of waiting for it!
+    //using a template literal to inject the id!
+    return () => { //This is the function that is being retried within the 4 second timeframe (or, default one)
+        //This inner function is the one that is continually retried!
+        return getFn();
+    }
+});
+
+Cypress.Commands.add('login', () => {
+    cy.visit('/login'); 
+    //using an existing seeded user!
+    //Note: Test isolation is still in play, so the cookie is cleared between tests!
+    cy.getById('auth-email').click();
+    cy.getById('auth-email').type('test@example.com');
+    cy.getById('auth-password').type('testpassword');
+    cy.getById('auth-submit').click();
+})
